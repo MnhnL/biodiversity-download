@@ -5,8 +5,8 @@
 # iNaturalist. It also downloads ID-mapping from GBIF to CoL and from
 # iNaturalist to CoL.
 
-source download_clb.sh
-source download_inat.sh
+source clb_functions.sh
+source inat_functions.sh
 
 read -p "iNaturalist User: " inat_user
 read -s -p "Password: " inat_password

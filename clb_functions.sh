@@ -1,3 +1,9 @@
+latest_clb_dataset() {
+    local from_dataset="${1}"
+    local latest_dataset_key=$(curl -s -X 'GET' 'https://api.checklistbank.org/dataset?offset=0&limit=1&releasedFrom=3&reverse=true' -H 'accept: application/json' | python3 -c 'import json, sys; print(json.load(sys.stdin)["result"][0]["key"])')
+    echo $latest_dataset_key
+}
+
 download_clb_checklist() {
     local dataset_key=${1}
     local download_path=${2}
