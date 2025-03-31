@@ -78,7 +78,7 @@ spam%3Dfalse"
     echo "Created job with id: '$job_id'. Polling for readiness..."
 
     local finished_at=None
-    while [ "${finished_at}" = "None" ]; do
+    while [ "${finished_at}" == "None" ]; do
 	finished_at=$(curl -s -b ${cookiejar_path} "${inaturalist_url}/flow_tasks/${job_id}/run.json" \
 			   -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0' \
 			   -H 'Accept: application/json, text/javascript, */*; q=0.01' \
