@@ -10,17 +10,19 @@ download_inat_observations() {
     local output_root="inaturalist_${date_start}-${date_end}"
     local archive_path="/tmp/${output_root}.zip"
     local csv_path="${output_root}.csv"
+    local inaturalist_url="https://inaturalist.lu"
+    local cookiejar_path="/tmp/inat_cookiejar"
     
-    if [ -f cookiejar ]; then
-	rm cookiejar
+    if [ -f ${cookiejar_path} ]; then
+	rm ${cookiejar_path}
     fi
 
     # Get an intial csrf-token
-    local csrf_token=$(curl -s -c cookiejar 'https://inaturalist.lu/login' \
+    local csrf_token=$(curl -s -c ${cookiejar_path} "${inaturalist_url}/login" \
 			   | sed -nr 's/.*name="csrf-token" content="(.*)".*/\1/p')
     # Log in
     echo "Logging in as '${user}'"
-    csrf_token=$(curl -s -L -c cookiejar -b cookiejar 'https://inaturalist.lu/session' \
+    csrf_token=$(curl -s -L -c ${cookiejar_path} -b ${cookiejar_path} "${inaturalist_url}/session" \
 		      -F "authenticity_token=${csrf_token}" \
 		      -F "user[email]=${user}" \
 		      -F "user[password]=${password}" \
@@ -47,7 +49,7 @@ spam%3Dfalse"
     fi
 
     local query_raw="utf8=%E2%9C%93&observations_export_flow_task%5Binputs_attributes%5D%5B0%5D%5Bextra%5D%5Bquery%5D=${query}&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bid%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bid%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bobserved_on_string%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bobserved_on_string%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bobserved_on%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bobserved_on%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btime_observed_at%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btime_observed_at%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btime_zone%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btime_zone%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Buser_id%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Buser_id%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Buser_login%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Buser_login%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Buser_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Buser_name%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bcreated_at%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bcreated_at%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bupdated_at%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bupdated_at%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bquality_grade%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bquality_grade%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Blicense%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Blicense%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Burl%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Burl%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bimage_url%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bimage_url%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bsound_url%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bsound_url%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btag_list%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btag_list%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bdescription%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bdescription%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bnum_identification_agreements%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bnum_identification_agreements%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bnum_identification_disagreements%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bnum_identification_disagreements%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bcaptive_cultivated%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bcaptive_cultivated%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Boauth_application_id%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Boauth_application_id%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bplace_guess%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bplace_guess%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Blatitude%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Blatitude%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Blongitude%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Blongitude%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bpositional_accuracy%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bpositional_accuracy%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bprivate_place_guess%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bprivate_place_guess%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bprivate_latitude%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bprivate_latitude%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bprivate_longitude%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bprivate_longitude%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bpublic_positional_accuracy%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bpublic_positional_accuracy%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bgeoprivacy%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bgeoprivacy%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_geoprivacy%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_geoprivacy%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bcoordinates_obscured%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bcoordinates_obscured%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bpositioning_method%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bpositioning_method%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bpositioning_device%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bpositioning_device%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bplace_town_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bplace_county_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bplace_state_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bplace_country_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bplace_admin1_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bplace_admin2_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bspecies_guess%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bspecies_guess%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bscientific_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bscientific_name%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bcommon_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Bcommon_name%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Biconic_taxon_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Biconic_taxon_name%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_id%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_id%5D=1&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_kingdom_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_phylum_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_subphylum_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_superclass_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_class_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_subclass_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_superorder_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_order_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_suborder_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_superfamily_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_family_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_subfamily_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_supertribe_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_tribe_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_subtribe_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_genus_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_genushybrid_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_species_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_hybrid_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_subspecies_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_variety_name%5D=0&observations_export_flow_task%5Boptions%5D%5Bcolumns%5D%5Btaxon_form_name%5D=0&commit=Create+Export"
-    local job_id=$(curl -s -b cookiejar 'https://inaturalist.lu/flow_tasks' \
+    local job_id=$(curl -s -b ${cookiejar_path} "${inaturalist_url}/flow_tasks" \
 			-H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0' \
 			-H 'Accept: application/json, text/javascript, */*; q=0.01' \
 			-H "X-CSRF-Token: ${csrf_token}" \
@@ -72,7 +74,7 @@ spam%3Dfalse"
 
     local finished_at=None
     while [ "${finished_at}" = "None" ]; do
-	finished_at=$(curl -s -b cookiejar "https://inaturalist.lu/flow_tasks/${job_id}/run.json" \
+	finished_at=$(curl -s -b ${cookiejar_path} "${inaturalist_url}/flow_tasks/${job_id}/run.json" \
 			   -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0' \
 			   -H 'Accept: application/json, text/javascript, */*; q=0.01' \
 			   -H 'Accept-Language: en-US,en;q=0.5' \
@@ -87,12 +89,12 @@ spam%3Dfalse"
 			   -H 'Sec-GPC: 1' \
 			   -H 'Pragma: no-cache' \
 			   -H 'Cache-Control: no-cache' \
-			  | python3 -c "import json, sys; j = json.load(sys.stdin); print(j.get('finished_at', 'error'))" 2> /dev/null)
+			  | python3 -c "import json, sys; print(json.load(sys.stdin).get('finished_at', 'error'))" 2> /dev/null)
 	echo "Download not ready yet. Waiting for ${poll_secs}s..."
 	sleep $poll_secs
     done
 
-    curl -s -b cookiejar "https://inaturalist.lu/flow_tasks/${job_id}/run.json" \
+    curl -s -b ${cookiejar_path} "${inaturalist_url}/flow_tasks/${job_id}/run.json" \
 	 -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0' \
 	 -H 'Accept: application/json, text/javascript, */*; q=0.01' \
 	 -H 'Accept-Language: en-US,en;q=0.5' \
@@ -114,8 +116,7 @@ spam%3Dfalse"
 
     echo "Downloading archive from '${download_url}'..."
     
-    curl -s -b cookiejar "${download_url}" -o "${archive_path}"
-    rm cookiejar download_inat_status.json
+    curl -s -b ${cookiejar_path} "${download_url}" -o "${archive_path}"
 
     echo "Unpacking to ${csv_path}"
     local zip_csv_path="observations-${job_id}.csv"
@@ -126,7 +127,7 @@ spam%3Dfalse"
     sleep 30
 
     echo "Deleting download on server..."
-    curl -s -b cookiejar "https://inaturalist.lu/flow_tasks/${job_id}" \
+    curl -s -b ${cookiejar_path} "https://inaturalist.lu/flow_tasks/${job_id}" \
 	 -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0' \
 	 -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
 	 -H 'Accept-Language: en-US,en;q=0.5' \
@@ -143,6 +144,7 @@ spam%3Dfalse"
 	 -H 'Cache-Control: no-cache' \
 	 -F "authenticity_token=${csrf_token}" -F '_method=delete'
 
+    rm ${cookiejar_path} download_inat_status.json
     echo "DONE!"
 }
 
