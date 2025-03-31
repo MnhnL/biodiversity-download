@@ -1,4 +1,3 @@
-# Read year from parameter
 download_inat_observations() {
     local user=${1}
     local password=${2}
@@ -12,6 +11,12 @@ download_inat_observations() {
     local csv_path="${output_root}.csv"
     local inaturalist_url="https://inaturalist.lu"
     local cookiejar_path="/tmp/inat_cookiejar"
+
+    if [ "${5}" != "" ]; then
+	local target_file_name=${5}
+    else
+	local target_file_name=${csv_path}
+    fi
     
     if [ -f ${cookiejar_path} ]; then
 	rm ${cookiejar_path}
