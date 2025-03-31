@@ -70,7 +70,7 @@ spam%3Dfalse"
 			-H 'Cache-Control: no-cache' \
 			--data-raw "${query_raw}" | python3 -c "import json, sys; print(json.load(sys.stdin).get('id', 'error'))")
 
-    if [ $job_id = 'error' ]; then
+    if [ "$job_id" == 'error' ||  "$job_id" == '' ]; then
 	echo "Can't get job_id. Exiting."
 	return
     fi
